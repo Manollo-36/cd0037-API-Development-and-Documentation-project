@@ -178,50 +178,56 @@ POST /questions
     \"difficulty\":2
 	}"
 	 
-	 {
-    "created": 29,
+	{
+    "created": 35,
     "question": [
         {
             "answer": "Maya Angelou",
             "category": 4,
             "difficulty": 2,
             "id": 5,
-            "question": "Whose autobiography is entitled 'I Know Why the Caged Bird Sings'?"
+            "question": "Whose autobiography is entitled 'I Know Why the Caged Bird Sings'?",
+            "rating": 0
         },
         {
             "answer": "Muhammad Ali",
             "category": 4,
             "difficulty": 1,
             "id": 9,
-            "question": "What boxer's original name is Cassius Clay?"
+            "question": "What boxer's original name is Cassius Clay?",
+            "rating": 0
         },
         {
             "answer": "George Washington Carver",
             "category": 4,
             "difficulty": 2,
             "id": 12,
-            "question": "Who invented Peanut Butter?"
+            "question": "Who invented Peanut Butter?",
+            "rating": 0
         },
         {
             "answer": "Scarab",
             "category": 4,
             "difficulty": 4,
             "id": 23,
-            "question": "Which dung beetle was worshipped by the ancient Egyptians?"
+            "question": "Which dung beetle was worshipped by the ancient Egyptians?",
+            "rating": 0
         },
         {
             "answer": "1912",
             "category": 4,
             "difficulty": 2,
-            "id": 28,
-            "question": "In what year did the Titanic sink?"
+            "id": 33,
+            "question": "In what year did the Titanic sink?",
+            "rating": 2
         },
         {
             "answer": "1912",
             "category": 4,
             "difficulty": 2,
-            "id": 29,
-            "question": "In what year did the Titanic sink?"
+            "id": 35,
+            "question": "In what year did the Titanic sink?",
+            "rating": 2
         }
     ]
 }
