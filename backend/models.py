@@ -1,8 +1,8 @@
 from sqlalchemy import Column, String, Integer
 from flask_sqlalchemy import SQLAlchemy
 database_name = 'trivia'
-database_user = 'postgres'
-database_password = 'password'
+database_user = 'Emmanuel'
+database_password = 'Manos'
 database_host = 'localhost:5432'
 database_path = f'postgresql://{database_user}:{database_password}@{database_host}/{database_name}'
 
@@ -28,12 +28,14 @@ class Question(db.Model):
     answer = Column(String, nullable=False)
     category = Column(String, nullable=False)
     difficulty = Column(Integer, nullable=False)
+    rating = Column(Integer, nullable=False)
 
-    def __init__(self, question, answer, category, difficulty):
+    def __init__(self, question, answer, category, difficulty,rating):
         self.question = question
         self.answer = answer
         self.category = category
         self.difficulty = difficulty
+        self.rating =rating
 
     def insert(self):
         db.session.add(self)
@@ -52,7 +54,8 @@ class Question(db.Model):
             'question': self.question,
             'answer': self.answer,
             'category': self.category,
-            'difficulty': self.difficulty
+            'difficulty': self.difficulty,
+            'rating': self.rating
         }
 
 """
