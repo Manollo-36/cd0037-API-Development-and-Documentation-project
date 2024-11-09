@@ -10,7 +10,7 @@ class FormView extends Component {
       answer: '',
       difficulty: 1,
       category: 1,
-      rating:1,
+    //rating:1,
       categories: {},
     };
   }
@@ -41,8 +41,8 @@ class FormView extends Component {
         question: this.state.question,
         answer: this.state.answer,
         difficulty: this.state.difficulty,
-        category: this.state.category,
-        rating: this.state.rating,
+        category: this.state.category
+        //rating: this.state.rating,
       }),
       xhrFields: {
         withCredentials: true,
@@ -102,7 +102,7 @@ class FormView extends Component {
               })}
             </select>
           </label>
-          <label>
+          {/*<label>
             Rating
             <select name='rating' onChange={this.handleChange}>
               <option value='1'>1</option>
@@ -111,7 +111,7 @@ class FormView extends Component {
               <option value='4'>4</option>
               <option value='5'>5</option>
             </select>
-          </label>
+          </label>*/}
           <input type='submit' className='button' value='Submit' />
         </form>
       </div>

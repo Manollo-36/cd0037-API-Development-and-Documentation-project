@@ -1,5 +1,6 @@
-from tkinter import CURRENT
-from unicodedata import category
+#from tkinter import CURRENT
+#from unicodedata import category
+import sys
 from flask import Flask, request, abort, jsonify
 from flask_cors import CORS
 import random
@@ -65,7 +66,7 @@ def create_app(test_config=None):
             }
             return jsonify(response)
         except:
-            abort(404)
+            print(sys.exc_info())
 
     # GET Questions
     @app.route("/questions", methods=["GET"])
@@ -108,7 +109,7 @@ def create_app(test_config=None):
 
             return jsonify(response)
         except:
-            abort(422)
+           print(sys.exc_info())
 
     # DELETE Questions based on Question Id
     @app.route("/questions/<int:question_id>", methods=["DELETE"])
@@ -133,7 +134,7 @@ def create_app(test_config=None):
             return jsonify(response)
 
         except:
-            abort(422)
+            print(sys.exc_info())
 
     # POST Add Question and Search Question
     @app.route("/questions", methods=["POST"])
@@ -144,7 +145,7 @@ def create_app(test_config=None):
         new_answer = body.get("answer", None)
         new_category = body.get("category", None)
         new_difficulty = body.get("difficulty", None)
-        new_rating = body.get("rating", None)
+        #new_rating = body.get("rating", None)
 
         search = body.get("searchTerm", None)
         # print(f'search:{search}')
@@ -173,7 +174,7 @@ def create_app(test_config=None):
                     answer=new_answer,
                     category=new_category,
                     difficulty=new_difficulty,
-                    rating=new_rating,
+                    #rating=new_rating,
                 )
                 print(f"question:{add_question}")
                 add_question.insert()
@@ -192,7 +193,7 @@ def create_app(test_config=None):
                 return jsonify(response)
 
         except:
-            abort(422)
+           print(sys.exc_info())
 
     # GET Questions based on Category Id
     @app.route("/categories/<int:category_id>/questions", methods=["GET"])
@@ -227,7 +228,7 @@ def create_app(test_config=None):
             }
             return jsonify(response)
         except:
-            abort(422)
+            print(sys.exc_info())
 
     # GET Questions based on current Category and previous questions and randomize next question
     @app.route("/quizzes", methods=["POST"])
@@ -247,26 +248,28 @@ def create_app(test_config=None):
             else:
                 questions_in_category = (
                     db.session.query(Question.id)
-                    .filter(Question.category == current_category_id)
+                    .filter(Question.category == current_category_id).filter(~Question.id.in_(previous_questions))
                     .all()
                 )
 
             flat_question_in_cat = [
                 i for sub in questions_in_category for i in sub
             ]
-            filtered_questions_in_category = [
-                q for q in flat_question_in_cat if q not in previous_questions
-            ]
 
-            if len(filtered_questions_in_category) == 0:
+            # filtered_questions_in_category = ~Question.id.in_(previous_questions)
+            # filtered_questions_in_category = [
+            #     q for q in flat_question_in_cat if q not in previous_questions
+            # ]
+
+            if len(flat_question_in_cat) == 0:
                 response = {"question": None}
             else:
-                new_question_id = random.choice(filtered_questions_in_category)
+                new_question_id = random.choice(flat_question_in_cat)
                 question = db.session.get(Question, new_question_id)
                 response = {"question": question.format()}
             return jsonify(response)
         except:
-            abort(422)
+            print(sys.exc_info())
 
     # Error Handling
     @app.errorhandler(404)
@@ -299,7 +302,7 @@ def create_app(test_config=None):
         )
 
     @app.errorhandler(405)
-    def not_found(error):
+    def method_not_allowed(error):
         return (
             jsonify(
                 {

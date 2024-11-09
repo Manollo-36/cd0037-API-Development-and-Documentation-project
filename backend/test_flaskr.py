@@ -92,8 +92,49 @@ class TriviaTestCase(unittest.TestCase):
     #     self.assertEqual(data["success"], False)
     #     self.assertEqual(data["message"], "resource not found")
 
+    # def test_post_questions(self):
+    #     res = self.client().post("/questions", 
+    #     json={"question":"Why did the Titanic sink?","answer":"Hit an ice berg", "category": 4,"difficulty":2})    
+    #     print(f'Data:{res.data}')   
+    #     data = json.loads(res.data)
+    #     print(f'Data:{data}')
+    #     self.assertEqual(res.status_code, 200)
+    #     self.assertTrue(data["created"])
+    #     self.assertTrue(data["question"])
+  
+  # def test_post_questions(self):
+    #     res = self.client().post("/questions", 
+    #     json={"question":"Why did the Titanic sink?","answer":"Hit an ice berg", "category": 4,"difficulty":null})    
+    #     print(f'Data:{res.data}')   
+    #     data = json.loads(res.data)
+    #     print(f'Data:{data}')
+    #     self.assertEqual(res.status_code, 400)
+    #     self.assertTrue(data["created"])
+    #     self.assertTrue(data["question"])
+
+# def test_post_questions_search(self):
+    #     res = self.client().post("/questions", 
+    #     json={"searchTerm":"title"})    
+    #     print(f'Data:{res.data}')   
+    #     data = json.loads(res.data)
+    #     print(f'Data:{data}')
+    #     self.assertEqual(res.status_code, 200)
+    #     self.assertTrue(data["created"])
+    #     self.assertTrue(data["question"])
+
+    # def test_post_questions_search(self):
+    #     res = self.client().post("/questions", 
+    #     json={"searchTerm":"Jo"})    
+    #     print(f'Data:{res.data}')   
+    #     data = json.loads(res.data)
+    #     print(f'Data:{data}')
+    #     self.assertEqual(res.status_code, 400)
+    #     self.assertTrue(data["created"])
+    #     self.assertTrue(data["question"])
+
+
     def test_quiz(self):
-        res = self.client().get("/quizzes",json={"previous_question": [1],"quiz_category":{ "id":1}})    
+        res = self.client().post("/quizzes",json={"previous_question": [1],"quiz_category":{ "id":1}})    
         print(f'Data:{res.data}')   
         data = json.loads(res.data)
         print(f'Data:{data}')
@@ -103,7 +144,7 @@ class TriviaTestCase(unittest.TestCase):
 
 
     # def test_quiz(self):
-    #     res = self.client().get("/quizzes",json={"previous_question": [1],"quiz_category":{ "id":7}})    
+    #     res = self.client().post("/quizzes",json={"previous_question": [1],"quiz_category":{ "id":7}})    
     #     print(f'Data:{res.data}')   
     #     data = json.loads(res.data)
     #     print(f'Data:{data}')
