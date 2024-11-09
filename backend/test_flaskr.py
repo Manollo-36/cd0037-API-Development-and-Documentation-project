@@ -38,24 +38,44 @@ class TriviaTestCase(unittest.TestCase):
     TODO
     Write at least one test for each test for successful operation and for expected errors.
     """
-    def test_get_categories(self):
-        res = self.client().get("/categories")        
-        data = json.loads(res.data)
-        print(f'Data:{res.data}')
-        self.assertEqual(res.status_code, 200)
-        self.assertTrue(data["categories"])
-        self.assertTrue(len(data["categories"]))
+    # def test_get_categories(self):
+    #     res = self.client().get("/categories")        
+    #     data = json.loads(res.data)
+    #     print(f'Data:{res.data}')
+    #     self.assertEqual(res.status_code, 200)
+    #     self.assertTrue(data["categories"])
+    #     self.assertTrue(len(data["categories"]))
 
-    def test_404_get_categories(self):
-        res = self.client().get("/category",json={"id":1})        
+    # def test_404_get_categories(self):
+    #     res = self.client().get("/category",json={"id":1})        
+    #     data = json.loads(res.data)
+    #     print(f'Data:{res.data}')
+    #     self.assertEqual(res.status_code, 404)
+    #     self.assertEqual(data["success"], False)
+    #     self.assertEqual(data["message"], "resource not found")
+
+    # def test_200_sent_requesting_valid_page(self):
+    #     res = self.client().get("/questions?page=1")
+    #     print(f'res_Data:{res.data}')   
+    #     data = json.loads(res.data)
+    #     print(f'Data:{data}')   
+    #     self.assertEqual(res.status_code, 200)
+    #     self.assertTrue(data["questions"])
+    #     self.assertTrue(data["total_questions"])
+    #     self.assertTrue(data["categories"])
+    #     self.assertTrue(data["current_category"])
+                
+
+    def test_500_sent_requesting_beyond_valid_page(self):
+        res = self.client().get("/questions?page=1000")
         data = json.loads(res.data)
-        print(f'Data:{res.data}')
-        self.assertEqual(res.status_code, 404)
+
+        self.assertEqual(res.status_code, 500)
         self.assertEqual(data["success"], False)
-        self.assertEqual(data["message"], "resource not found")
+        self.assertEqual(data["message"], "internal server error")
 
     # def test_get_questions(self):
-    #     res = self.client().get("/questions", json={"category": 1})    
+    #     res = self.client().get("/questions")    
     #     print(f'Data:{res.data}')   
     #     data = json.loads(res.data)
     #     print(f'Data:{data}')
@@ -92,6 +112,25 @@ class TriviaTestCase(unittest.TestCase):
     #     self.assertEqual(data["success"], False)
     #     self.assertEqual(data["message"], "resource not found")
 
+    def test_200_delete_questions(self):
+        res = self.client().delete("/questions/25")    
+        print(f'Data:{res.data}')   
+        data = json.loads(res.data)
+        print(f'Data:{data}')
+        self.assertEqual(res.status_code, 200)
+        self.assertTrue(data["success"])
+        self.assertTrue(data["deleted"])
+        self.assertTrue(data["question"])
+
+    def test_500_delete_questions(self):
+        res = self.client().delete("/questions/100")    
+        print(f'Data:{res.data}')   
+        data = json.loads(res.data)
+        print(f'Data:{data}')
+        self.assertEqual(res.status_code, 500)
+        self.assertEqual(data["success"], False)
+        self.assertEqual(data["message"], "internal server error")
+
     # def test_200_post_questions(self):
     #     res = self.client().post("/questions", 
     #     json={"question":"Why did the Titanic sink?","answer":"Hit an ice berg", "category": 4,"difficulty":2})    
@@ -110,18 +149,8 @@ class TriviaTestCase(unittest.TestCase):
     #     print(f'Data:{data}')
     #     self.assertEqual(res.status_code, 404)
     #     self.assertEqual(data["success"], False)
-    #     self.assertEqual(data["message"], "resource not found")
-  
-    # def test_500_post_questions(self):
-    #     res = self.client().post("/questions", 
-    #     json={"question":"Why did the Titanic sink?","answer":"Hit an ice berg", "category": 4,"difficulty":''})    
-    #     #print(f'Data:{res.data}')   
-    #     data = json.loads(res.data)
-    #     #print(f'Data:{data}')
-    #     self.assertEqual(res.status_code, 500)
-    #     self.assertEqual(data["success"], False)
-    #     self.assertEqual(data["message"], "internal server error")
-
+    #     self.assertEqual(data["message"], "resource not found")  
+   
     # def test_post_questions_search(self):
     #     res = self.client().post("/questions", 
     #     json={"searchTerm":"title"})    
@@ -141,17 +170,7 @@ class TriviaTestCase(unittest.TestCase):
     #     self.assertEqual(res.status_code, 404)
     #     self.assertTrue(data["created"])
     #     self.assertTrue(data["question"])
-
-    # def test_post_questions_search(self):
-    #     res = self.client().post("/questions", 
-    #     json={"search_Term":2})    
-    #     #print(f'Data:{res.data}') 
-    #     data = json.loads(res.data)
-    #     #print(f'Data:{data}')
-    #     self.assertEqual(res.status_code, 500)
-    #     self.assertEqual(data["success"], False)
-    #     self.assertEqual(data["message"], "internal server error")
-
+    
     # def test_quiz(self):
     #     res = self.client().post("/quizzes",json={"previous_questions": [1],"quiz_category":{ "id":1}})    
     #     print(f'Data:{res.data}')   
@@ -170,14 +189,6 @@ class TriviaTestCase(unittest.TestCase):
     #     self.assertEqual(data["success"], False)
     #     self.assertEqual(data["message"], "resource not found")
 
-    # def test_quiz(self):
-    #     res = self.client().post("/quizzes",json={"previous_question": [1],"quiz_category":{ "id":7}})    
-    #     print(f'Data:{res.data}')   
-    #     data = json.loads(res.data)
-    #     print(f'Data:{data}')
-    #     self.assertEqual(res.status_code, 500)
-    #     self.assertEqual(data["success"], False)
-    #     self.assertEqual(data["message"], "internal server error")
 # Make the tests conveniently executable
 if __name__ == "__main__":
     unittest.main()

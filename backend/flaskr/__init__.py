@@ -96,6 +96,7 @@ def create_app(test_config=None):
             else:
                 print(f"length: {len(selection)}")
                 questions = [question.format() for question in selection]
+
             print(f"questions:{questions}")
             if len(questions) == 0:
                 abort(404)
@@ -115,14 +116,16 @@ def create_app(test_config=None):
     @app.route("/questions/<int:question_id>", methods=["DELETE"])
     def delete_book(question_id):
         try:
+            print(f"question_id:{question_id}")
             question = Question.query.filter(
                 Question.id == question_id
             ).one_or_none()
-
+            print(f"question:{question}")
             if question is None:
                 abort(404)
 
             question.delete()
+            
             selection = Question.query.order_by(Question.id).all()
             current_question = paginate_questions(request, selection)
 
