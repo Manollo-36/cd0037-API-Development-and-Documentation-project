@@ -11,8 +11,8 @@ class TriviaTestCase(unittest.TestCase):
     def setUp(self):
         """Define test variables and initialize app."""
         self.database_name = "trivia_test"
-        self.database_user = "Emmanuel"        
-        self.database_password = "Manos"
+        self.database_user = "postgres"        
+        self.database_password = "postgres"
         self.database_host = "localhost:5432"
         self.database_path = f"postgresql://{self.database_user}:{self.database_password}@{self.database_host}/{self.database_name}"
 
@@ -38,6 +38,8 @@ class TriviaTestCase(unittest.TestCase):
     TODO
     Write at least one test for each test for successful operation and for expected errors.
     """
+    #GET Categories
+
     # def test_get_categories(self):
     #     res = self.client().get("/categories")        
     #     data = json.loads(res.data)
@@ -54,27 +56,9 @@ class TriviaTestCase(unittest.TestCase):
     #     self.assertEqual(data["success"], False)
     #     self.assertEqual(data["message"], "resource not found")
 
-    # def test_200_sent_requesting_valid_page(self):
-    #     res = self.client().get("/questions?page=1")
-    #     print(f'res_Data:{res.data}')   
-    #     data = json.loads(res.data)
-    #     print(f'Data:{data}')   
-    #     self.assertEqual(res.status_code, 200)
-    #     self.assertTrue(data["questions"])
-    #     self.assertTrue(data["total_questions"])
-    #     self.assertTrue(data["categories"])
-    #     self.assertTrue(data["current_category"])
-                
+    # GET Questions
 
-    def test_500_sent_requesting_beyond_valid_page(self):
-        res = self.client().get("/questions?page=1000")
-        data = json.loads(res.data)
-
-        self.assertEqual(res.status_code, 500)
-        self.assertEqual(data["success"], False)
-        self.assertEqual(data["message"], "internal server error")
-
-    # def test_get_questions(self):
+    # def test_200_get_questions(self):
     #     res = self.client().get("/questions")    
     #     print(f'Data:{res.data}')   
     #     data = json.loads(res.data)
@@ -93,6 +77,9 @@ class TriviaTestCase(unittest.TestCase):
     #     self.assertEqual(data["success"], False)
     #     self.assertEqual(data["message"], "resource not found")
     
+   
+    #GET Question By Category
+
     # def test_200_get_questions_by_category_id(self):
     #     res = self.client().get("/category/2/questions", json={"category": 1})    
     #     print(f'Data:{res.data}')   
@@ -112,26 +99,30 @@ class TriviaTestCase(unittest.TestCase):
     #     self.assertEqual(data["success"], False)
     #     self.assertEqual(data["message"], "resource not found")
 
-    def test_200_delete_questions(self):
-        res = self.client().delete("/questions/25")    
-        print(f'Data:{res.data}')   
-        data = json.loads(res.data)
-        print(f'Data:{data}')
-        self.assertEqual(res.status_code, 200)
-        self.assertTrue(data["success"])
-        self.assertTrue(data["deleted"])
-        self.assertTrue(data["question"])
 
-    def test_500_delete_questions(self):
-        res = self.client().delete("/questions/100")    
-        print(f'Data:{res.data}')   
-        data = json.loads(res.data)
-        print(f'Data:{data}')
-        self.assertEqual(res.status_code, 500)
-        self.assertEqual(data["success"], False)
-        self.assertEqual(data["message"], "internal server error")
+    #Paging
 
-    # def test_200_post_questions(self):
+    # def test_200_sent_requesting_valid_page(self):
+    #     res = self.client().get("/questions?page=1")
+    #     print(f'res_Data:{res.data}')   
+    #     data = json.loads(res.data)
+    #     print(f'Data:{data}')   
+    #     self.assertEqual(res.status_code, 200)
+    #     self.assertTrue(data["questions"])
+    #     self.assertTrue(data["total_questions"])
+    #     self.assertTrue(data["categories"])
+    #     self.assertTrue(data["current_category"])                
+
+    # def test_500_sent_requesting_beyond_valid_page(self):
+    #     res = self.client().get("/questions?page=1000")
+    #     data = json.loads(res.data)
+    #     self.assertEqual(res.status_code, 500)
+    #     self.assertEqual(data["success"], False)
+    #     self.assertEqual(data["message"], "internal server error")
+
+    # Add Question
+
+    # def test_200_post_questions_add(self):
     #     res = self.client().post("/questions", 
     #     json={"question":"Why did the Titanic sink?","answer":"Hit an ice berg", "category": 4,"difficulty":2})    
     #     print(f'Data:{res.data}')   
@@ -141,7 +132,7 @@ class TriviaTestCase(unittest.TestCase):
     #     self.assertTrue(data["created"])
     #     self.assertTrue(data["question"])
 
-    # def test_404_post_questions(self):
+    # def test_404_post_questions_add(self):
     #     res = self.client().post("/question", 
     #     json={"question":"Why did the Titanic sink?","answer":"Hit an ice berg", "category": 4,"difficulty":''})    
     #     print(f'Data:{res.data}')   
@@ -150,8 +141,11 @@ class TriviaTestCase(unittest.TestCase):
     #     self.assertEqual(res.status_code, 404)
     #     self.assertEqual(data["success"], False)
     #     self.assertEqual(data["message"], "resource not found")  
+
    
-    # def test_post_questions_search(self):
+    #Search Question
+
+    # def test_200_post_questions_search(self):
     #     res = self.client().post("/questions", 
     #     json={"searchTerm":"title"})    
     #     print(f'Data:{res.data}')   
@@ -161,7 +155,7 @@ class TriviaTestCase(unittest.TestCase):
     #     self.assertTrue(data["created"])
     #     self.assertTrue(data["question"])
 
-    # def test_post_questions_search(self):
+    # def test_404_post_questions_search(self):
     #     res = self.client().post("/question", 
     #     json={"searchTerm":"Jo"})    
     #     print(f'Data:{res.data}')   
@@ -170,8 +164,31 @@ class TriviaTestCase(unittest.TestCase):
     #     self.assertEqual(res.status_code, 404)
     #     self.assertTrue(data["created"])
     #     self.assertTrue(data["question"])
-    
-    # def test_quiz(self):
+
+    #Delete Question
+    # def test_200_delete_questions(self):
+    #     res = self.client().delete("/questions/2")    
+    #     print(f'Data:{res.data}')   
+    #     data = json.loads(res.data)
+    #     print(f'Data:{data}')
+    #     self.assertEqual(res.status_code, 200)
+    #     self.assertTrue(data["success"])
+    #     self.assertTrue(data["deleted"])
+    #     self.assertTrue(data["question"])
+
+    # def test_500_delete_questions(self):
+    #     res = self.client().delete("/questions/100")    
+    #     print(f'Data:{res.data}')   
+    #     data = json.loads(res.data)
+    #     print(f'Data:{data}')
+    #     self.assertEqual(res.status_code, 500)
+    #     self.assertEqual(data["success"], False)
+    #     self.assertEqual(data["message"], "internal server error")    
+
+
+    #POST Quiz
+
+    # def test_200_quiz(self):
     #     res = self.client().post("/quizzes",json={"previous_questions": [1],"quiz_category":{ "id":1}})    
     #     print(f'Data:{res.data}')   
     #     data = json.loads(res.data)
@@ -180,7 +197,7 @@ class TriviaTestCase(unittest.TestCase):
     #     self.assertTrue(data["question"])
     #     self.assertTrue(len(data["question"]))
 
-    # def test_quiz(self):
+    # def test_404_quiz(self):
     #     res = self.client().post("/quizzes",json={"previous_questions": [1],"quiz_category":{ "id":7}})    
     #     print(f'Data:{res.data}')   
     #     data = json.loads(res.data)
@@ -188,6 +205,8 @@ class TriviaTestCase(unittest.TestCase):
     #     self.assertEqual(res.status_code, 404)
     #     self.assertEqual(data["success"], False)
     #     self.assertEqual(data["message"], "resource not found")
+
+
 
 # Make the tests conveniently executable
 if __name__ == "__main__":

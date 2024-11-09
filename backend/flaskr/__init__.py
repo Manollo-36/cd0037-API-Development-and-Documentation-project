@@ -1,6 +1,7 @@
 #from tkinter import CURRENT
 #from unicodedata import category
 import sys
+from unicodedata import category
 from flask import Flask, request, abort, jsonify
 from flask_cors import CORS
 import random
@@ -71,41 +72,33 @@ def create_app(test_config=None):
     # GET Questions
     @app.route("/questions", methods=["GET"])
     def retrieve_questions():
-        # Get page number
-        page = request.args.get("page", 1, type=int)
-        print(f"page_num:{page}")
-        CURRENT_CATEGORY_ID = page
+        
         try:
             all_categories = Category.query.all()
             formatted_cat = {cat.id: cat.type for cat in all_categories}
 
-            # print(f'selection:{selection}')
-            current_category = formatted_cat[CURRENT_CATEGORY_ID]
-            print(f"current_category:{current_category}")
+            # # print(f'selection:{selection}')
+            # current_category = formatted_cat[CURRENT_CATEGORY_ID]
+            # print(f"current_category:{current_category}")
 
             # print(f'current_question:{current_question}')
+            
 
-            selection = (
-                Question.query.filter(Question.category == CURRENT_CATEGORY_ID)
-                .order_by(Question.id)
-                .all()
+
+            selection = (Question.query.all()
             )
             # print(f'selection:{selection}')
-            if len(selection) >= 10:
-                questions = paginate_questions(request, selection)
-            else:
-                print(f"length: {len(selection)}")
-                questions = [question.format() for question in selection]
-
-            print(f"questions:{questions}")
-            if len(questions) == 0:
+            
+            current_questions = paginate_questions(request, selection)
+            #print(f"questions:{questions}")
+            if len(current_questions) == 0:
                 abort(404)
 
             response = {
-                "questions": questions,
+                "questions": current_questions,
                 "total_questions": len(Question.query.all()),
                 "categories": formatted_cat,
-                "current_category": current_category,
+                "current_category": None,
             }
 
             return jsonify(response)
@@ -125,7 +118,7 @@ def create_app(test_config=None):
                 abort(404)
 
             question.delete()
-            
+
             selection = Question.query.order_by(Question.id).all()
             current_question = paginate_questions(request, selection)
 
