@@ -157,8 +157,9 @@ def create_app(test_config=None):
                     .filter(Question.question.ilike("%{}%".format(search)))
                     .all()
                 )
-                # print(f'selection:{selection}')
+                print(f'selection:{selection}')
                 if len(selection) >= 10:
+                    print(f'selection_nuim:{len(selection)}')
                     current_question = paginate_questions(request, selection)
                 else:
                     current_question = [
@@ -176,8 +177,11 @@ def create_app(test_config=None):
                     difficulty=new_difficulty,
                     #rating=new_rating,
                 )
-                print(f"question:{add_question}")
-                add_question.insert()
+                print(f"add_question:{add_question}")
+                if add_question is None:
+                    abort(400)
+                else:
+                    add_question.insert()
 
                 selection = (
                     add_question.query.filter(Question.category == new_category)
@@ -185,7 +189,7 @@ def create_app(test_config=None):
                     .all()
                 )
                 current_questions = paginate_questions(request, selection)
-
+                
                 response = {
                     "created": add_question.id,
                     "question": current_questions,
@@ -236,12 +240,12 @@ def create_app(test_config=None):
         try:
             quiz_request = request.get_json()
 
-            # print(f'body:{quiz_request}')
+            #print(f'body:{quiz_request}')
             previous_questions = quiz_request["previous_questions"]
             current_category_id = quiz_request["quiz_category"]["id"]
 
-            # print(f'previous_questions:{previous_questions}')
-            # print(f'quiz_category:{current_category_id}')
+            #print(f'previous_questions:{previous_questions}')
+            #print(f'quiz_category:{current_category_id}')
 
             if current_category_id == 0:
                 questions_in_category = db.session.query(Question.id).all()
@@ -254,12 +258,7 @@ def create_app(test_config=None):
 
             flat_question_in_cat = [
                 i for sub in questions_in_category for i in sub
-            ]
-
-            # filtered_questions_in_category = ~Question.id.in_(previous_questions)
-            # filtered_questions_in_category = [
-            #     q for q in flat_question_in_cat if q not in previous_questions
-            # ]
+            ]         
 
             if len(flat_question_in_cat) == 0:
                 response = {"question": None}
@@ -267,6 +266,7 @@ def create_app(test_config=None):
                 new_question_id = random.choice(flat_question_in_cat)
                 question = db.session.get(Question, new_question_id)
                 response = {"question": question.format()}
+                #print(f"question:{question}")
             return jsonify(response)
         except:
             print(sys.exc_info())
@@ -312,6 +312,19 @@ def create_app(test_config=None):
                 }
             ),
             405,
+        )
+    
+    @app.errorhandler(500)
+    def internal_server_error(error):
+        return (
+            jsonify(
+                {
+                    "success": False,
+                    "error": 500,
+                    "message": "internal server error",
+                }
+            ),
+            500,
         )
 
     return app
