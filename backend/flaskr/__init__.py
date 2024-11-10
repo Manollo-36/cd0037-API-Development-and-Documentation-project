@@ -1,8 +1,7 @@
 #from tkinter import CURRENT
 #from unicodedata import category
 import sys
-from unicodedata import category
-from flask import Flask, request, abort, jsonify
+from flask import Flask, request, jsonify
 from flask_cors import CORS
 import random
 
@@ -13,7 +12,6 @@ QUESTIONS_PER_PAGE = 10
 
 def paginate_questions(request, selection):
     page = request.args.get("page", 1, type=int)
-    #print(f"page_num:{page}")
     start = (page - 1) * QUESTIONS_PER_PAGE
     end = start + QUESTIONS_PER_PAGE
 
@@ -66,7 +64,7 @@ def create_app(test_config=None):
                 "categories": formatted_category,
             }
             return jsonify(response)
-        except:
+        except Exception:
             print(sys.exc_info())
 
     # GET Questions
@@ -75,15 +73,13 @@ def create_app(test_config=None):
         
         try:
             all_categories = Category.query.all()
-            formatted_cat = {cat.id: cat.type for cat in all_categories}                   
-
+            formatted_cat = {cat.id: cat.type for cat in all_categories}
 
             selection = (Question.query.all()
             )
-            # print(f'selection:{selection}')
             
             current_questions = paginate_questions(request, selection)
-            #print(f"questions:{questions}")
+            
             if len(current_questions) == 0:
                 return not_found(404) 
 
@@ -95,21 +91,18 @@ def create_app(test_config=None):
             }
 
             return jsonify(response)
-        except:
+        except Exception:
            print(sys.exc_info())
 
     # DELETE Questions based on Question Id
     @app.route("/questions/<int:question_id>", methods=["DELETE"])
     def delete_question(question_id):
         try:
-            print(f"question_id:{question_id}")
             question = Question.query.filter(
                 Question.id == question_id
             ).one_or_none()
-            print(f"question:{question}")
-
-            if question is None:
-                print(f'Hello!')
+           
+            if question is None:               
                 return not_found(404)         
       
             question.delete()
@@ -123,7 +116,7 @@ def create_app(test_config=None):
             }
             return jsonify(response)
 
-        except:
+        except Exception:
             print(sys.exc_info())
 
     # POST Add Question and Search Question
@@ -138,8 +131,7 @@ def create_app(test_config=None):
         #new_rating = body.get("rating", None)
 
         search = body.get("searchTerm", None)
-        print(f'search:{search}')
-
+        
         try:
             if search:
                 selection = (
@@ -186,7 +178,7 @@ def create_app(test_config=None):
                 }
                 return jsonify(response)
 
-        except:
+        except Exception:
            print(sys.exc_info())
 
     # GET Questions based on Category Id
@@ -205,11 +197,8 @@ def create_app(test_config=None):
             print(f"selection:{selection}")
             if len(selection) == 0:
                 return not_found(404) 
-
             
             questions = paginate_questions(request, selection)
-
-            # print(f'questions:{questions}')
 
             response = {
                 "questions": questions,
@@ -217,7 +206,7 @@ def create_app(test_config=None):
                 "current_category": current_category,
             }
             return jsonify(response)
-        except:
+        except Exception:
             print(sys.exc_info())
 
     # GET Questions based on current Category and previous questions and randomize next question
@@ -225,14 +214,10 @@ def create_app(test_config=None):
     def play_quiz():
         try:
             quiz_request = request.get_json()
-
-            #print(f'body:{quiz_request}')
+         
             previous_questions = quiz_request["previous_questions"]
             current_category_id = quiz_request["quiz_category"]["id"]
-
-            #print(f'previous_questions:{previous_questions}')
-            #print(f'quiz_category:{current_category_id}')
-
+          
             if current_category_id == 0:
                 questions_in_category = db.session.query(Question.id).all()
             else:
@@ -243,7 +228,7 @@ def create_app(test_config=None):
                 )
                 if len(questions_in_category)==0:
                     return bad_request(400)
-                #print(f'questions_in_category :{questions_in_category}')
+               
             flat_question_in_cat = [
                 i for sub in questions_in_category for i in sub
             ]         
@@ -253,10 +238,9 @@ def create_app(test_config=None):
             else:
                 new_question_id = random.choice(flat_question_in_cat)
                 question = db.session.get(Question, new_question_id)
-                response = {"question": question.format()}
-                #print(f"question:{question}")
+                response = {"question": question.format()}                
             return jsonify(response)
-        except:
+        except Exception:            
             print(sys.exc_info())
 
     # Error Handling

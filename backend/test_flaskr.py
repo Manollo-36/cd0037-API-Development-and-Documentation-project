@@ -1,9 +1,8 @@
-from http.client import NETWORK_AUTHENTICATION_REQUIRED
-import os
+#import os
 import unittest
 import json
 from flaskr import create_app
-from models import db, Question, Category
+from models import db, Question
 
 
 class TriviaTestCase(unittest.TestCase):
@@ -49,8 +48,6 @@ class TriviaTestCase(unittest.TestCase):
     TODO
     Write at least one test for each test for successful operation and for expected errors.
     """
-
-    
     #GET Categories
 
     def test_get_categories(self):
