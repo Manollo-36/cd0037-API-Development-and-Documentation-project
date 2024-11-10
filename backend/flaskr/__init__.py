@@ -9,12 +9,11 @@ from models import setup_db, Question, Category, db
 
 QUESTIONS_PER_PAGE = 10
 
-
 def paginate_questions(request, selection):
-    page = request.args.get("page", 1, type=int)
+    page =  db.paginate(selection,1,QUESTIONS_PER_PAGE,None,True,False)  #request.args.get("page", 1, type=int)
     start = (page - 1) * QUESTIONS_PER_PAGE
     end = start + QUESTIONS_PER_PAGE
-
+   
     questions = [question.format() for question in selection]
     current_questions = questions[start:end]
 
@@ -64,7 +63,8 @@ def create_app(test_config=None):
                 "categories": formatted_category,
             }
             return jsonify(response)
-        except Exception:
+        except Exception as ex:
+            print(ex)
             print(sys.exc_info())
 
     # GET Questions
@@ -91,7 +91,8 @@ def create_app(test_config=None):
             }
 
             return jsonify(response)
-        except Exception:
+        except Exception as ex:
+           print(ex)
            print(sys.exc_info())
 
     # DELETE Questions based on Question Id
@@ -116,10 +117,11 @@ def create_app(test_config=None):
             }
             return jsonify(response)
 
-        except Exception:
+        except Exception as ex:
+            print(ex)
             print(sys.exc_info())
 
-    # POST Add Question and Search Question
+    # POST Add Question 
     @app.route("/questions", methods=["POST"])
     def create_question():
         body = request.get_json()
@@ -129,7 +131,43 @@ def create_app(test_config=None):
         new_category = body.get("category", None)
         new_difficulty = body.get("difficulty", None)
         #new_rating = body.get("rating", None)
+        try:
+            add_question = Question(
+                question=new_question,
+                answer=new_answer,
+                category=new_category,
+                difficulty=new_difficulty,
+                #rating=new_rating,
+            )
+            print(f"add_question:{add_question}")
+            if new_question =="" or new_answer =="":
+                return method_not_allowed(405) 
+            else:
+                add_question.insert()
 
+            selection = (
+                add_question.query.filter(Question.category == new_category)
+                .order_by(Question.id)
+                .all()
+            )
+            current_questions = paginate_questions(request, selection)
+            
+            response = {
+                "created": add_question.id,
+                "question": current_questions,
+                "success": True
+            }
+            return jsonify(response),201
+
+        except Exception as ex:
+           print(ex)
+           print(sys.exc_info())
+
+    #POST Search Question
+    @app.route("/questions/search", methods=["POST"])
+    def create_search():
+        body = request.get_json()
+        print(f"body:{body}")
         search = body.get("searchTerm", None)
         
         try:
@@ -151,34 +189,8 @@ def create_app(test_config=None):
 
                 response = {"questions": current_question}
                 return jsonify(response)
-            else:
-                add_question = Question(
-                    question=new_question,
-                    answer=new_answer,
-                    category=new_category,
-                    difficulty=new_difficulty,
-                    #rating=new_rating,
-                )
-                print(f"add_question:{add_question}")
-                if add_question is None:
-                    return method_not_allowed(405) 
-                else:
-                    add_question.insert()
-
-                selection = (
-                    add_question.query.filter(Question.category == new_category)
-                    .order_by(Question.id)
-                    .all()
-                )
-                current_questions = paginate_questions(request, selection)
-                
-                response = {
-                    "created": add_question.id,
-                    "question": current_questions,
-                }
-                return jsonify(response)
-
-        except Exception:
+        except Exception as ex:
+           print(ex)
            print(sys.exc_info())
 
     # GET Questions based on Category Id
@@ -206,7 +218,8 @@ def create_app(test_config=None):
                 "current_category": current_category,
             }
             return jsonify(response)
-        except Exception:
+        except Exception as ex:
+            print(ex)
             print(sys.exc_info())
 
     # GET Questions based on current Category and previous questions and randomize next question
@@ -240,7 +253,8 @@ def create_app(test_config=None):
                 question = db.session.get(Question, new_question_id)
                 response = {"question": question.format()}                
             return jsonify(response)
-        except Exception:            
+        except Exception as ex:
+            print(ex)            
             print(sys.exc_info())
 
     # Error Handling
