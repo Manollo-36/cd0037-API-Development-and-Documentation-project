@@ -60,7 +60,7 @@ def create_app(test_config=None):
             }
             print(f"formatted_category:{formatted_category}")
             if len(formatted_category) == 0:
-                abort(404)
+                return not_found(404) 
 
             response = {
                 "categories": formatted_category,
@@ -75,14 +75,7 @@ def create_app(test_config=None):
         
         try:
             all_categories = Category.query.all()
-            formatted_cat = {cat.id: cat.type for cat in all_categories}
-
-            # # print(f'selection:{selection}')
-            # current_category = formatted_cat[CURRENT_CATEGORY_ID]
-            # print(f"current_category:{current_category}")
-
-            # print(f'current_question:{current_question}')
-            
+            formatted_cat = {cat.id: cat.type for cat in all_categories}                   
 
 
             selection = (Question.query.all()
@@ -92,7 +85,7 @@ def create_app(test_config=None):
             current_questions = paginate_questions(request, selection)
             #print(f"questions:{questions}")
             if len(current_questions) == 0:
-                abort(404)
+                return not_found(404) 
 
             response = {
                 "questions": current_questions,
@@ -107,18 +100,19 @@ def create_app(test_config=None):
 
     # DELETE Questions based on Question Id
     @app.route("/questions/<int:question_id>", methods=["DELETE"])
-    def delete_book(question_id):
+    def delete_question(question_id):
         try:
             print(f"question_id:{question_id}")
             question = Question.query.filter(
                 Question.id == question_id
             ).one_or_none()
             print(f"question:{question}")
+
             if question is None:
-                abort(404)
-
+                print(f'Hello!')
+                return not_found(404)         
+      
             question.delete()
-
             selection = Question.query.order_by(Question.id).all()
             current_question = paginate_questions(request, selection)
 
@@ -144,7 +138,7 @@ def create_app(test_config=None):
         #new_rating = body.get("rating", None)
 
         search = body.get("searchTerm", None)
-        # print(f'search:{search}')
+        print(f'search:{search}')
 
         try:
             if search:
@@ -155,13 +149,13 @@ def create_app(test_config=None):
                 )
                 print(f'selection:{selection}')
                 if len(selection) >= 10:
-                    print(f'selection_nuim:{len(selection)}')
+                    print(f'selection_num:{len(selection)}')
                     current_question = paginate_questions(request, selection)
                 else:
                     current_question = [
                         question.format() for question in selection
                     ]
-                    # print(f'current_questions:{current_question}')
+                    print(f'current_question:{current_question}')
 
                 response = {"questions": current_question}
                 return jsonify(response)
@@ -175,7 +169,7 @@ def create_app(test_config=None):
                 )
                 print(f"add_question:{add_question}")
                 if add_question is None:
-                    abort(400)
+                    return method_not_allowed(405) 
                 else:
                     add_question.insert()
 
@@ -201,22 +195,18 @@ def create_app(test_config=None):
         try:
             all_categories = Category.query.all()
             formatted_cat = {cat.id: cat.type for cat in all_categories}
-
-            # print(f'selection:{selection}')
+                    
+            if category_id not in formatted_cat:
+                return not_found(404) 
             current_category = formatted_cat[category_id]
-            # print(f"current_category:{current_category}")
-
-            # print(f'current_question:{current_question}')
-
-            selection = (
-                Question.query.filter(Question.category == category_id)
-                .order_by(Question.id)
-                .all()
-            )
-            if len(selection) == 0:
-                abort(404)
-
+          
+            selection = Question.query.filter(Question.category == category_id).order_by(Question.id).all()
+            
             print(f"selection:{selection}")
+            if len(selection) == 0:
+                return not_found(404) 
+
+            
             questions = paginate_questions(request, selection)
 
             # print(f'questions:{questions}')
@@ -240,8 +230,8 @@ def create_app(test_config=None):
             previous_questions = quiz_request["previous_questions"]
             current_category_id = quiz_request["quiz_category"]["id"]
 
-            #print(f'previous_questions:{previous_questions}')
-            #print(f'quiz_category:{current_category_id}')
+            print(f'previous_questions:{previous_questions}')
+            print(f'quiz_category:{current_category_id}')
 
             if current_category_id == 0:
                 questions_in_category = db.session.query(Question.id).all()
@@ -251,7 +241,7 @@ def create_app(test_config=None):
                     .filter(Question.category == current_category_id).filter(~Question.id.in_(previous_questions))
                     .all()
                 )
-
+                print(f'questions_in_category :{questions_in_category}')
             flat_question_in_cat = [
                 i for sub in questions_in_category for i in sub
             ]         
@@ -262,7 +252,7 @@ def create_app(test_config=None):
                 new_question_id = random.choice(flat_question_in_cat)
                 question = db.session.get(Question, new_question_id)
                 response = {"question": question.format()}
-                #print(f"question:{question}")
+                print(f"question:{question}")
             return jsonify(response)
         except:
             print(sys.exc_info())
