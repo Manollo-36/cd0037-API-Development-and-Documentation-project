@@ -230,8 +230,8 @@ def create_app(test_config=None):
             previous_questions = quiz_request["previous_questions"]
             current_category_id = quiz_request["quiz_category"]["id"]
 
-            print(f'previous_questions:{previous_questions}')
-            print(f'quiz_category:{current_category_id}')
+            #print(f'previous_questions:{previous_questions}')
+            #print(f'quiz_category:{current_category_id}')
 
             if current_category_id == 0:
                 questions_in_category = db.session.query(Question.id).all()
@@ -241,7 +241,9 @@ def create_app(test_config=None):
                     .filter(Question.category == current_category_id).filter(~Question.id.in_(previous_questions))
                     .all()
                 )
-                print(f'questions_in_category :{questions_in_category}')
+                if len(questions_in_category)==0:
+                    return bad_request(400)
+                #print(f'questions_in_category :{questions_in_category}')
             flat_question_in_cat = [
                 i for sub in questions_in_category for i in sub
             ]         
@@ -252,7 +254,7 @@ def create_app(test_config=None):
                 new_question_id = random.choice(flat_question_in_cat)
                 question = db.session.get(Question, new_question_id)
                 response = {"question": question.format()}
-                print(f"question:{question}")
+                #print(f"question:{question}")
             return jsonify(response)
         except:
             print(sys.exc_info())
