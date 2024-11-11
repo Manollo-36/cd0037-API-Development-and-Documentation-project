@@ -33,8 +33,6 @@ class TriviaTestCase(unittest.TestCase):
         self.cxt.push()     
         db.create_all()
 
-        
-
     def tearDown(self):
         """Executed after each test"""
         with self.app.app_context():
@@ -173,17 +171,17 @@ class TriviaTestCase(unittest.TestCase):
             
 
     #Delete Question
-    # def test_200_delete_questions(self):
-    #     res = self.client().delete("/questions/3")    
-    #     #print(f'Data:{res.data}')   
-    #     data = json.loads(res.data)
-    #     question = Question.query.filter(Question.id == 3).one_or_none()
-    #     #print(f'question:{question}')
-    #     self.assertEqual(res.status_code, 200)
-    #     self.assertTrue(data["success"])
-    #     self.assertTrue(data["deleted"],2)
-    #     self.assertTrue(data["question"])
-    #     self.assertEqual(question, None)
+    def test_200_delete_questions(self):
+        res = self.client().delete("/questions/3")    
+        #print(f'Data:{res.data}')   
+        data = json.loads(res.data)
+        question = Question.query.filter(Question.id == 3).one_or_none()
+        #print(f'question:{question}')
+        self.assertEqual(res.status_code, 200)
+        self.assertTrue(data["success"])
+        self.assertTrue(data["deleted"],2)
+        self.assertTrue(data["question"])
+        self.assertEqual(question, None)
 
     # def test_404_delete_questions(self):
     #     res = self.client().delete("/questions/100")    
